@@ -1,0 +1,11 @@
+aws.access.key.production = xxxxxx
+aws.secret.key.production = xxxxxx
+aws.access.key.stage = xxxxxx
+aws.secret.key.stage = xxxxxx
+aws.access.key.development = xxxxxx
+aws.secret.key.development = xxxxxx
+aws.dynamodb.table = xxxxxx
+aws.s3.bucket.name.logs = xxxxxx
+aws.postgres.endpoint.development = xxxxxx
+aws.postgres.endpoint.stage = xxxxxx
+aws.postgres.endpoint.production = xxxxxx
