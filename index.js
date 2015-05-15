@@ -12,9 +12,9 @@ var query3 = require("pg-query");
 
 // requires multiple instances of aws-sdk (one for each different environment)
 var aws = require('aws-sdk');
-delete require.cache[require.resolve("pg-query")];
+delete require.cache[require.resolve("aws-sdk")];
 var aws2 = require('aws-sdk');
-delete require.cache[require.resolve("pg-query")];
+delete require.cache[require.resolve("aws-sdk")];
 var aws3 = require('aws-sdk');
 
 var dynamodb = new aws.DynamoDB();
@@ -32,9 +32,9 @@ var AWS_DYNAMODB_TABLE = properties.get('aws.dynamodb.table');
 var AWS_BUCKET_NAME_LOGS = properties.get('aws.s3.bucket.name.logs');
 
 // postgresql connections
-query.connectionParameters = properties.get('aws.postgres.endpoint.development');
+query.connectionParameters = properties.get('aws.postgres.endpoint.production');
 query2.connectionParameters = properties.get('aws.postgres.endpoint.stage');
-query3.connectionParameters = properties.get('aws.postgres.endpoint.production');
+query3.connectionParameters = properties.get('aws.postgres.endpoint.development');
 
 // other variables
 var STAGE = 'STAGE';
@@ -128,7 +128,7 @@ function deleteExpiredVisits(time) {
 		if (!err) {
 			calculateCurrentStats(PRODUCTION);
 		} else {
-			logError("Delete items in postgresql DEVELOPMENT failed: " + err);
+			logError("Delete items in postgresql PRODUCTION failed: " + err);
 		}
 	});
 
@@ -144,7 +144,7 @@ function deleteExpiredVisits(time) {
 		if (!err) {
 			calculateCurrentStats(DEVELOPMENT);
 		} else {
-			logError("Delete items in postgresql PRODUCTION failed: " + err);
+			logError("Delete items in postgresql DEVELOPMENT failed: " + err);
 		}
 	});
 }
@@ -249,7 +249,7 @@ var updateApiStage = limit(function(id, age, male) {
 	    }
 	}, function(err, data) {
 	  	if (err) {
-				logError("Update item to dynamodb PRODUCTION failed: " + err);
+				logError("Update item to dynamodb STAGE failed: " + err);
 			}
 	});
 }).to(5).per(1000);
@@ -267,10 +267,10 @@ var updateApiDevelopment = limit(function(id, age, male) {
 	    }
 	}, function(err, data) {
 	  	if (err) {
-				logError("Update item to dynamodb PRODUCTION failed: " + err);
+				logError("Update item to dynamodb DEVELOPMENT failed: " + err);
 			}
 	});
 }).to(5).per(1000);
 
 // main execution
-deleteExpiredVisits(new Date(new Date().setDate(new Date().getDate() - 10)).getTime());
+deleteExpiredVisits(new Date(new Date().setDate(new Date().getDate() - 7)).getTime());
