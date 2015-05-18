@@ -1,6 +1,6 @@
 var fs = require('fs');
+var limit = require("simple-rate-limiter");
 var propertiesReader = require('properties-reader');
-
 var properties = propertiesReader('properties.file');
 
 // requires multiple instances of pg-query (one for each different environment)
