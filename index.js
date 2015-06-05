@@ -1,4 +1,5 @@
 var fs = require('fs');
+var cron = require('cron');
 var aws = require('aws-sdk');
 var query = require("pg-query");
 var limit = require("simple-rate-limiter");
@@ -11,6 +12,9 @@ var AWS_ACCESS_KEY_ID = properties.get('aws.access.key');
 var AWS_SECRET_ACCESS_KEY = properties.get('aws.secret.key');
 var AWS_DYNAMODB_TABLE = properties.get('aws.dynamodb.table');
 var AWS_BUCKET_LOGS = properties.get('aws.s3.bucket.logs');
+
+// variables
+var REMOVE_VISITS_DAYS_AGO = 7;
 
 // postgresql connection
 query.connectionParameters = properties.get('aws.postgres.endpoint');
@@ -139,4 +143,9 @@ var updateApi = limit(function(id, age, male) {
 }).to(5).per(1000);
 
 // main execution
-deleteExpiredVisits(new Date(new Date().setDate(new Date().getDate() - 7)).getTime());
+deleteExpiredVisits(new Date(new Date().setDate(new Date().getDate() - REMOVE_VISITS_DAYS_AGO)).getTime());
+
+var cronJob = cron.job("0 */30 * * * *", function(){
+    deleteExpiredVisits(new Date(new Date().setDate(new Date().getDate() - REMOVE_VISITS_DAYS_AGO)).getTime());
+}); 
+cronJob.start();
